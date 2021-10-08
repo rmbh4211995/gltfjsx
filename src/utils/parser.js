@@ -274,6 +274,7 @@ function parse(fileName, gltf, options = {}) {
   return `
         ${options.types ? `\nimport * as THREE from 'three'` : ''}
         import React, { useRef ${hasInstances ? ', useMemo' : ''} } from 'react'
+        import useCycleAnimations from '@hooks/UseCycleAnimation'
         import { useGLTF, ${hasInstances ? 'Merged, ' : ''} ${
     scene.includes('PerspectiveCamera') ? 'PerspectiveCamera,' : ''
   }
@@ -281,7 +282,6 @@ function parse(fileName, gltf, options = {}) {
         ${hasAnimations ? 'useAnimations' : ''} } from '@react-three/drei'
         ${options.types ? 'import { GLTF } from "three-stdlib"' : ''}
         ${options.types ? printTypes(objects, animations) : ''}
-        import useCycleAnimations from '@hooks/UseCycleAnimation'     
         ${
           hasInstances
             ? `
