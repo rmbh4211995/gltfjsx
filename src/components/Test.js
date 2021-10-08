@@ -23,7 +23,7 @@ function TestGltfs() {
       try {
         for (let file of entries) {
           let nameExt = file.match(/[-_\w]+[.][\w]+$/i)[0]
-          let output = '.test/' + nameExt.charAt(0).toUpperCase() + nameExt.slice(1) + (config.types ? '.tsx' : '.js')
+          let output = '.test/' + nameExt + (config.types ? '.tsx' : '.js')
           setFile(nameExt)
           await gltfjsx(file, output, { ...config, setLog, timeout: 0, delay: 0 })
         }
