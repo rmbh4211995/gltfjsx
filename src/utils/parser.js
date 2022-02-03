@@ -237,7 +237,7 @@ function parse(fileName, gltf, options = {}) {
 
   function printAnimations(animations) {
     return animations.length
-      ? `\nuseCycleAnimations<GLTFActions>({ animations, ref, timerLabel: props.timerLabel })`
+      ? ''
       : ''
   }
 
@@ -273,8 +273,7 @@ function parse(fileName, gltf, options = {}) {
   const scene = print(objects, gltf, gltf.scene)
   return `
         ${options.types ? `\nimport * as THREE from 'three'` : ''}
-        import React, { useRef ${hasInstances ? ', useMemo' : ''} } from 'react'
-        import useCycleAnimations from '@hooks/UseCycleAnimation'
+        import React, { forwardRef, memo, ${hasInstances ? ', useMemo' : ''} } from 'react'
         import { useGLTF, ${hasInstances ? 'Merged, ' : ''} ${
     scene.includes('PerspectiveCamera') ? 'PerspectiveCamera,' : ''
   }
@@ -282,6 +281,21 @@ function parse(fileName, gltf, options = {}) {
         ${hasAnimations ? 'useAnimations' : ''} } from '@react-three/drei'
         ${options.types ? 'import { GLTF } from "three-stdlib"' : ''}
         ${options.types ? printTypes(objects, animations) : ''}
+
+        interface ModelProps {
+          ref?: React.ForwardedRef<React.ReactNode>
+          nodes: GLTFResult['nodes']
+          materials: GLTFResult['materials']
+          timerLabel: string
+        }
+        
+        // TODO: this isn't firing atm
+        const areEqual = (prevProps: ModelProps, nextProps: ModelProps) => {
+          if (prevProps.timerLabel === nextProps.timerLabel) return true
+        
+          return false
+        }
+
         ${
           hasInstances
             ? `
@@ -304,20 +318,18 @@ function parse(fileName, gltf, options = {}) {
             : ''
         }
 
-        ${hasInstances ? '' : 'export default'} function Model(${hasInstances ? 'instances, ' : ''}props ${
-    options.types ? ": JSX.IntrinsicElements['group'] & { glb: any; timerLabel: string }" : ''
-  }) {
-          const ref = ${options.types ? 'useRef<THREE.Group>()' : 'useRef()'}
-          const { nodes, materials${hasAnimations ? ', animations' : ''} } = useGLTF(props.glb${
-    options.draco ? `, ${JSON.stringify(options.draco)}` : ''
-  })${options.types ? ' as GLTFResult' : ''}${printAnimations(animations)}
+        // TODO: this needs to only render once
+        const Modal = memo(React.forwardRef<React.ReactNode, ModelProps>(({ nodes, materials }, ref) => {
           return (
-            <group ref={ref} {...props} dispose={null}>
+            <group ref={ref} dispose={null}>
         ${scene}
             </group>
           )
-        }
+        }),
+        areEqual,
+        )
 
+export default Model
 `
 }
 
