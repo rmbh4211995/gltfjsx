@@ -7,14 +7,14 @@ https://user-images.githubusercontent.com/2223602/126318148-99da7ed6-a578-48dd-b
 
 A small command-line tool that turns GLTF assets into declarative and re-usable [react-three-fiber](https://github.com/pmndrs/react-three-fiber) JSX components.
 
-### Why? Because GLTF's are blackboxes ...
+### Why? Because the GLTF workflow on the web is deeply flawed ...
 
-- They're dumped wholesale into the scene which prevents re-use
-- Contents can only be found by traversal which is cumbersome and slow
-- Changes are made by mutation, which alters the source data and, again, prevents re-use
-- Making contents conditional or adding/removing nodes is hard
+- They're dumped wholesale into the scene which prevents re-use, in threejs objects can only be mounted once
+- Contents can only be found out by traversal which is cumbersome and slow
+- Changes to queried nodes are made by mutation, which alters the source data and, again, prevents re-use
+- Re-structuring content, making nodes conditional or adding/removing them is cumbersome
 
-Gltfjsx creates a virtual, nested graph of all the objects and materials inside your asset. It will not touch or modify your files in any way. Now you can easily make the data dynamic, alter contents, add events, or re-use the asset.
+Gltfjsx creates a virtual, nested graph of all the objects and materials inside your asset. It will not touch or modify your files in any way. Now you can easily make the data dynamic, alter contents, add events, or re-use the asset without having to re-parse and clone, as it is usually done.
 
 ## Usage
 
@@ -130,7 +130,7 @@ Add events:
 
 ## Features
 
-#### ⚡️ Draco compression ootb
+#### ⚡️ Draco and meshopt compression ootb
 
 You don't need to do anything if your models are draco compressed, since `useGLTF` defaults to a [draco CDN](https://www.gstatic.com/draco/v1/decoders/). By adding the `--draco` flag you can refer to [local binaries](https://github.com/mrdoob/three.js/tree/dev/examples/js/libs/draco/gltf) which must reside in your /public folder.
 
