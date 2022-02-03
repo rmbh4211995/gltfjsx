@@ -319,7 +319,7 @@ function parse(fileName, gltf, options = {}) {
         }
 
         // TODO: this needs to only render once
-        const Modal = memo(React.forwardRef<React.ReactNode, ModelProps>(({ nodes, materials }, ref) => {
+        const Model = memo(React.forwardRef<React.ReactNode, ModelProps>(({ nodes, materials }, ref) => {
           return (
             <group ref={ref} dispose={null}>
         ${scene}
