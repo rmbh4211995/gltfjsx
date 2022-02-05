@@ -273,7 +273,8 @@ function parse(fileName, gltf, options = {}) {
   const scene = print(objects, gltf, gltf.scene)
   return `
         ${options.types ? `\nimport * as THREE from 'three'` : ''}
-        import React, { forwardRef, memo, ${hasInstances ? ', useMemo' : ''} } from 'react'
+        import { useAnimationResult, AnimatedModelProps } from '@customtypes/index'
+        import React, { FC, memo, useEffect, useRef ${hasInstances ? ', useMemo' : ''} } from 'react'
         import { useGLTF, ${hasInstances ? 'Merged, ' : ''} ${
     scene.includes('PerspectiveCamera') ? 'PerspectiveCamera,' : ''
   }
@@ -282,15 +283,8 @@ function parse(fileName, gltf, options = {}) {
         ${options.types ? 'import { GLTF } from "three-stdlib"' : ''}
         ${options.types ? printTypes(objects, animations) : ''}
 
-        interface ModelProps {
-          ref?: React.ForwardedRef<React.ReactNode>
-          nodes: GLTFResult['nodes']
-          materials: GLTFResult['materials']
-          timerLabel: string
-        }
-        
         // TODO: this isn't firing atm
-        const areEqual = (prevProps: ModelProps, nextProps: ModelProps) => {
+        const areEqual = (prevProps: AnimatedModelProps, nextProps: AnimatedModelProps) => {
           if (prevProps.timerLabel === nextProps.timerLabel) return true
         
           return false
@@ -319,13 +313,24 @@ function parse(fileName, gltf, options = {}) {
         }
 
         // TODO: this needs to only render once
-        const Model = memo(React.forwardRef<React.ReactNode, ModelProps>(({ nodes, materials }, ref) => {
+        const Model: FC<AnimatedModelProps> = memo(({ glbUtl, onSetAnimationMixer }) => {
+          const { nodes, materials, animations } = useGLTF(glbUrl) as GLTF & {
+            nodes: Record<string, THREE.SkinnedMesh>
+            materials: Record<string, THREE.MeshBasicMaterial>
+          }
+          const ref = useRef()
+          const { mixer, names, actions, clips } = useAnimations(animations, ref)
+        
+          useEffect(() => {
+            onSetAnimationMixer({ mixer, names, actions, clips })
+          }, [])
+
           return (
             <group ref={ref} dispose={null}>
         ${scene}
             </group>
           )
-        }),
+        },
         areEqual,
         )
 
