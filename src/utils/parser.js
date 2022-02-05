@@ -313,7 +313,7 @@ function parse(fileName, gltf, options = {}) {
         }
 
         // TODO: this needs to only render once
-        const Model: FC<AnimatedModelProps> = memo(({ glbUtl, onSetAnimationMixer }) => {
+        const Model: FC<AnimatedModelProps> = memo(({ glbUrl, onSetAnimationMixer }) => {
           const { nodes, materials, animations } = useGLTF(glbUrl) as GLTF & {
             nodes: Record<string, THREE.SkinnedMesh>
             materials: Record<string, THREE.MeshBasicMaterial>
