@@ -282,8 +282,7 @@ function parse(fileName, gltf, options = {}) {
         ${hasAnimations ? 'useAnimations' : ''} } from '@react-three/drei'
         ${options.types ? 'import { GLTF } from "three-stdlib"' : ''}
         ${options.types ? printTypes(objects, animations) : ''}
-
-        // TODO: this isn't firing atm
+        
         const areEqual = (prevProps: AnimatedModelProps, nextProps: AnimatedModelProps) => {
           if (prevProps.timerLabel === nextProps.timerLabel) return true
         
@@ -312,7 +311,6 @@ function parse(fileName, gltf, options = {}) {
             : ''
         }
 
-        // TODO: this needs to only render once
         const Model: FC<AnimatedModelProps> = memo(({ glbUrl, onSetAnimationMixer }) => {
           const { nodes, materials, animations } = useGLTF(glbUrl) as GLTF & {
             nodes: Record<string, THREE.SkinnedMesh>
